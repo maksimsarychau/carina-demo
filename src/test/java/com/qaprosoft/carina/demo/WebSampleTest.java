@@ -44,7 +44,7 @@ import com.qaprosoft.carina.demo.gui.pages.NewsPage;
  * @author qpsdemo
  */
 public class WebSampleTest extends AbstractTest {
-	@BeforeMethod()
+	@BeforeMethod(alwaysRun=true)
 	public void startdriver() {
 		LOGGER.info("beforeMethod-111");
         HomePage homePage = new HomePage(getDriver());
