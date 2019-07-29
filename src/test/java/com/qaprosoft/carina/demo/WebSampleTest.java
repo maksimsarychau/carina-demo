@@ -17,6 +17,9 @@ package com.qaprosoft.carina.demo;
 
 import java.util.List;
 
+import com.qaprosoft.carina.core.foundation.utils.tag.Priority;
+import com.qaprosoft.carina.core.foundation.utils.tag.TestPriority;
+import com.qaprosoft.carina.core.foundation.utils.tag.TestTag;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.testng.Assert;
@@ -43,13 +46,21 @@ import com.qaprosoft.carina.demo.gui.pages.NewsPage;
 public class WebSampleTest extends AbstractTest {
     @Test(dataProvider = "SingleDataProvider", description = "JIRA#AUTO-0008")
     @MethodOwner(owner = "qpsdemo")
+    @TestPriority(Priority.P3)
+    @TestTag(name = "area test", value = "data provider")
+    @TestTag(name = "specialization", value = "xlsx")
     @XlsDataSourceParameters(path = "xls/demo.xlsx", sheet = "GSMArena", dsUid = "TUID", dsArgs = "brand, model, display, camera, ram, battery")
     public void testModelSpecs(String brand, String model, String display, String camera, String ram, String battery) {
         // Open GSM Arena home page and verify page is opened
         HomePage homePage = new HomePage(getDriver());
         homePage.open();
         Assert.assertTrue(homePage.isPageOpened(), "Home page is not opened");
+        
+        //Closing advertising if it's displayed
+        homePage.getWeValuePrivacyAd().closeAdIfPresent();
+        
         // Select phone brand
+        homePage = new HomePage(getDriver());
         BrandModelsPage productsPage = homePage.selectBrand(brand);
         // Select phone model
         ModelInfoPage productInfoPage = productsPage.selectModel(model);
@@ -60,8 +71,11 @@ public class WebSampleTest extends AbstractTest {
         Assert.assertEquals(productInfoPage.readBattery(), battery, "Invalid battery info!");
     }
 
+
     @Test(description = "JIRA#AUTO-0009")
     @MethodOwner(owner = "qpsdemo")
+    @TestPriority(Priority.P1)
+    @TestTag(name = "area test", value = "web")
     public void testCompareModels() {
         // Open GSM Arena home page and verify page is opened
         HomePage homePage = new HomePage(getDriver());
@@ -75,7 +89,7 @@ public class WebSampleTest extends AbstractTest {
         List<ModelSpecs> specs = comparePage.compareModels("Samsung Galaxy J3", "Samsung Galaxy J5", "Samsung Galaxy J7 Pro");
         // Verify model announced dates
         Assert.assertEquals(specs.get(0).readSpec(SpecType.ANNOUNCED), "2015, November");
-        Assert.assertEquals(specs.get(1).readSpec(SpecType.ANNOUNCED), "2016, September");
+        Assert.assertEquals(specs.get(1).readSpec(SpecType.ANNOUNCED), "2015, June");
         Assert.assertEquals(specs.get(2).readSpec(SpecType.ANNOUNCED), "2017, June");
     }
     
@@ -97,4 +111,5 @@ public class WebSampleTest extends AbstractTest {
             Assert.assertTrue(StringUtils.containsIgnoreCase(n.readTitle(), searchQ), "Invalid search results!");
         }
     }
+
 }
